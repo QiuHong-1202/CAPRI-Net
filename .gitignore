@@ -165,5 +165,7 @@ cython_debug/
 # exps
 /abc_voxel/
 /abc_voxel_test/
+/abc_voxel_decoder/
+/abc_voxel_transformer_decoder/
 /shapenet_pcr/
 /shapenet_voxel/

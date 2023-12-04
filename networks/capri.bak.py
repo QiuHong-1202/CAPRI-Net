@@ -198,9 +198,6 @@ class Decoder(nn.Module):
 		self.p_dim = p_dim
 		self.linear_1 = nn.Linear(self.ef_dim*8, self.ef_dim*16, bias=True)
 		self.linear_2 = nn.Linear(self.ef_dim*16, self.p_dim*7, bias=True)
-		self.decoder_layer = nn.TransformerDecoderLayer(d_model=32, nhead=8)
-		self.transformer_decoder = nn.TransformerDecoder(self.decoder_layer, num_layers=3)
-
 		nn.init.xavier_uniform_(self.linear_1.weight)
 		nn.init.constant_(self.linear_1.bias,0)
 		nn.init.xavier_uniform_(self.linear_2.weight)
@@ -210,12 +207,7 @@ class Decoder(nn.Module):
 		l1 = self.linear_1(inputs)
 		l1 = F.leaky_relu(l1, negative_slope=0.01, inplace=True)
 
-
-		l1 = l1.reshape(l1.shape[0], 16, 32)
-		transformer_out = self.transformer_decoder(l1, l1)
-		transformer_out = transformer_out.reshape(transformer_out.shape[0], -1)
-
-		l2 = self.linear_2(transformer_out)
+		l2 = self.linear_2(l1)
 		l2 = l2.view(-1, 7, self.p_dim)
 		l2 = torch.cat([torch.abs(l2[:, :3, :]), l2[:, 3:, :]], 1)
 		return l2
